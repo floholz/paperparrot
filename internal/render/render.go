@@ -9,9 +9,11 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/emulation"
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/page"
@@ -68,6 +70,20 @@ var blockAll = []*network.BlockPattern{
 	{URLPattern: "wss://*:*/*", Block: true},
 	{URLPattern: "ftp://*:*/*", Block: true},
 	{URLPattern: "file:///*", Block: true},
+}
+
+// blockNetwork applies blockAll; Chromium < ~140 only knows the legacy
+// `urls` parameter, so fall back to a raw call on "Invalid parameters".
+func blockNetwork(ctx context.Context) error {
+	err := network.SetBlockedURLs().WithURLPatterns(blockAll).Do(ctx)
+	if err == nil {
+		return nil
+	}
+	urls := make([]string, 0, len(blockAll))
+	for _, p := range blockAll {
+		urls = append(urls, strings.ReplaceAll(strings.ReplaceAll(p.URLPattern, ":*/*", "/*"), "///*", "://*"))
+	}
+	return cdp.Execute(ctx, "Network.setBlockedURLs", map[string]any{"urls": urls}, nil)
 }
 
 // Chrome is a lazily started, shared headless browser.
@@ -195,7 +211,7 @@ func (c *Chrome) renderOnce(ctx context.Context, html string) ([]byte, error) {
 	err = chromedp.Run(tctx,
 		emulation.SetScriptExecutionDisabled(true),
 		network.Enable(),
-		network.SetBlockedURLs().WithURLPatterns(blockAll),
+		chromedp.ActionFunc(blockNetwork),
 		chromedp.Navigate("about:blank"),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			tree, err := page.GetFrameTree().Do(ctx)

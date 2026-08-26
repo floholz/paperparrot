@@ -1,0 +1,7 @@
+pb_data
+data
+ui/node_modules
+ui/dist
+.git
+paperparrot
+*.log

@@ -1,0 +1,21 @@
+services:
+  paperparrot:
+    image: ghcr.io/floholz/paperparrot:latest
+    build: .
+    container_name: paperparrot
+    restart: unless-stopped
+    ports:
+      - "8072:8072"
+    volumes:
+      # must be writable by uid 1000 (the container runs as user "pp")
+      - ./data:/pb_data
+    # headless Chromium needs more shared memory than Docker's 64 MB default
+    shm_size: 256m
+    environment:
+      # registration: unset = open until the first user exists, then closed;
+      # "true" = always open, "false" = always closed
+      # PP_REGISTRATION: "true"
+      # optional: PocketBase superuser for the admin UI at /_/ (created once, on first start)
+      # PP_ADMIN_EMAIL: you@example.com
+      # PP_ADMIN_PASSWORD: change-me-please
+      TZ: Europe/Vienna
