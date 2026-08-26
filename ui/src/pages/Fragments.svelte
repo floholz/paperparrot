@@ -81,7 +81,7 @@
 {#if loading}
   <p class="muted">Loading…</p>
 {:else if !fragments.length}
-  <div class="empty">No fragments yet. {Object.keys(kinds).length ? `Your templates use: ${Object.keys(kinds).join(', ')}.` : 'Tag an object field in a template schema with "fragment": "client" to use them.'}</div>
+  <div class="empty">No fragments yet. {Object.keys(kinds).length ? `Your templates use: ${Object.keys(kinds).join(', ')}.` : 'Tag an object field in a template schema with "fragment": "recipient" to use them.'}</div>
 {:else}
   {#each grouped as [kind, list] (kind)}
     <div class="panel">
@@ -102,12 +102,12 @@
 {/if}
 
 {#if edit}
-  <Modal title={edit.id ? 'Edit fragment' : 'New fragment'} onclose={() => (edit = undefined)}>
+  <Modal title={edit.id ? 'Edit fragment' : 'New fragment'} onclose={() => (edit = undefined)} dismissable={false}>
     <div class="col">
       <div class="row">
         <label class="field" style="flex:1">Name <input bind:value={edit.name} placeholder="Example FlexCo" /></label>
         <label class="field">Kind
-          <input bind:value={edit.kind} list="kinds" placeholder="client" onchange={() => { if (edit) edit.data = normalize(kinds[edit.kind]?.fields ?? [], edit.data) }} />
+          <input bind:value={edit.kind} list="kinds" placeholder="recipient" onchange={() => { if (edit) edit.data = normalize(kinds[edit.kind]?.fields ?? [], edit.data) }} />
           <datalist id="kinds">{#each Object.keys(kinds) as k}<option value={k}></option>{/each}</datalist>
         </label>
       </div>

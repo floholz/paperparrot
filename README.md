@@ -97,7 +97,7 @@ preview shows — use `{{with .nope}}{{.deep}}{{end}}` for optional blocks.
 { "fields": [
   { "key": "number", "type": "sequence", "format": "HN-{yy}-{n}", "reset": "year" },
   { "key": "date",   "type": "date", "default": "today" },
-  { "key": "recipient", "type": "object", "fragment": "client", "fields": [
+  { "key": "recipient", "type": "object", "fragment": "recipient", "fields": [
       { "key": "name", "type": "text" }, { "key": "address", "type": "textarea" } ] },
   { "key": "items", "type": "list", "min": 1, "fields": [
       { "key": "text", "type": "textarea" }, { "key": "amount", "type": "money" } ] },

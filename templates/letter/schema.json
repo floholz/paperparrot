@@ -6,7 +6,7 @@
       { "key": "address", "type": "text", "label": "Address (one line)" },
       { "key": "place", "type": "text", "label": "Place", "required": false }
     ]},
-    { "key": "recipient", "type": "object", "label": "To", "fragment": "client", "fields": [
+    { "key": "recipient", "type": "object", "label": "To", "fragment": "recipient", "fields": [
       { "key": "name", "type": "text", "label": "Name" },
       { "key": "address", "type": "textarea", "label": "Address" }
     ]},
