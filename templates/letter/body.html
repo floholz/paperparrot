@@ -1,0 +1,19 @@
+<div class="sender-line small muted">{{.sender.name}} · {{.sender.address}}</div>
+
+<section class="cols">
+  <div class="recipient">
+    <strong>{{.recipient.name}}</strong><br>
+    {{nl2br .recipient.address}}
+  </div>
+  <div class="right">
+    {{with .sender.place}}{{.}}, {{end}}{{date .date}}
+  </div>
+</section>
+
+<h2 class="subject">{{.subject}}</h2>
+
+<div class="body">{{nl2br .body}}</div>
+
+<p class="closing">{{.closing}}</p>
+{{with .signature}}<img class="signature" src="{{asset .}}" alt="">{{end}}
+<p class="name">{{.sender.name}}</p>

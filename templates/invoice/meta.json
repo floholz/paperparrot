@@ -1,0 +1,8 @@
+{
+  "name": "Honorarnote (invoice)",
+  "description": "Austrian-style fee note: sender, recipient, numbered, itemised, payment box. Kleinunternehmer note included.",
+  "page": "A4",
+  "locale": "de-AT",
+  "title_format": "{{.number}} {{.recipient.name}}",
+  "order": 1
+}

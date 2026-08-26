@@ -1,0 +1,28 @@
+{
+  "fields": [
+    { "key": "number", "type": "sequence", "label": "Number", "format": "HN-{yy}-{n}", "reset": "year" },
+    { "key": "date", "type": "date", "label": "Date", "default": "today" },
+    { "key": "sender", "type": "object", "label": "From", "fragment": "sender", "fields": [
+      { "key": "name", "type": "text", "label": "Name" },
+      { "key": "address", "type": "textarea", "label": "Address" },
+      { "key": "phone", "type": "text", "label": "Phone", "required": false },
+      { "key": "email", "type": "text", "label": "Email", "required": false },
+      { "key": "iban", "type": "text", "label": "IBAN" },
+      { "key": "bic", "type": "text", "label": "BIC", "required": false }
+    ]},
+    { "key": "recipient", "type": "object", "label": "To", "fragment": "client", "fields": [
+      { "key": "name", "type": "text", "label": "Name" },
+      { "key": "address", "type": "textarea", "label": "Address" },
+      { "key": "email", "type": "text", "label": "Email", "required": false },
+      { "key": "uid", "type": "text", "label": "UID", "required": false }
+    ]},
+    { "key": "items", "type": "list", "label": "Items", "min": 1, "fields": [
+      { "key": "text", "type": "textarea", "label": "Service" },
+      { "key": "period", "type": "text", "label": "Period", "required": false, "placeholder": "01.05.2026 – 31.05.2026" },
+      { "key": "amount", "type": "money", "label": "Amount" }
+    ]},
+    { "key": "note", "type": "textarea", "label": "Note", "required": false,
+      "default": "Die Verrechnung der oben angeführten Leistung erfolgt gemäß der Kleinunternehmerregelung § 6 Abs. 1 Z 27 UStG 1994 und ist somit umsatzsteuerbefreit." },
+    { "key": "logo", "type": "asset", "label": "Logo", "required": false, "accept": "image/*" }
+  ]
+}

@@ -1,0 +1,53 @@
+<header class="head">
+  <h1>Honorarnote</h1>
+  <div class="sender small">
+    <strong>{{.sender.name}}</strong><br>
+    {{nl2br .sender.address}}<br>
+    {{with .sender.phone}}{{.}}<br>{{end}}
+    {{with .sender.email}}<a href="mailto:{{.}}">{{.}}</a>{{end}}
+  </div>
+  {{with .logo}}<img class="logo" src="{{asset .}}" alt="">{{end}}
+</header>
+
+<section class="cols meta">
+  <div class="recipient">
+    <div class="muted small">An:</div>
+    <strong>{{.recipient.name}}</strong><br>
+    {{nl2br .recipient.address}}<br>
+    {{with .recipient.email}}<a href="mailto:{{.}}">{{.}}</a><br>{{end}}
+    {{with .recipient.uid}}<span class="muted">UID:</span> {{.}}{{end}}
+  </div>
+  <div class="right">
+    <span class="muted">Datum</span> {{date .date}}
+  </div>
+</section>
+
+<h2 class="number">{{.number}}</h2>
+
+<table class="items">
+  <thead>
+    <tr><th>Leistung</th><th class="num">Preis</th></tr>
+  </thead>
+  <tbody>
+    {{range .items}}
+    <tr>
+      <td>{{nl2br .text}}{{with .period}}<div class="muted small period">{{.}}</div>{{end}}</td>
+      <td class="num">{{money .amount}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+  <tfoot>
+    <tr><th>Total</th><th class="num">{{money (sum .items "amount")}}</th></tr>
+  </tfoot>
+</table>
+
+{{with .note}}<p class="small note">{{nl2br .}}</p>{{end}}
+
+<h3>Überweisungsinformationen</h3>
+<div class="box payment">
+  {{.sender.name}}<br>
+  {{.sender.iban}}<br>
+  {{with .sender.bic}}{{.}}<br>{{end}}
+  <br>
+  <strong>Verwendungszweck:</strong> {{.number}}
+</div>

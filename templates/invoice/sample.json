@@ -1,0 +1,24 @@
+{
+  "number": "HN-26-1",
+  "date": "2026-05-31",
+  "sender": {
+    "name": "Jane Doe",
+    "address": "Musterstraße 1/2/3\n1010 Wien",
+    "phone": "+43 660 000 00 00",
+    "email": "jane@example.com",
+    "iban": "AT00 0000 0000 0000 0000",
+    "bic": "BANKATWW"
+  },
+  "recipient": {
+    "name": "Example FlexCo",
+    "address": "Beispielgasse 5\n1020 Wien",
+    "email": "finance@example.at",
+    "uid": "ATU00000000"
+  },
+  "items": [
+    { "text": "UX/UI Design und Barrierefreiheit des Kundenportals: Konzeption, Wireframes & Mockups, Accessibility-Implementierung gemäß WCAG 2.1", "period": "01.05.2026 – 31.05.2026", "amount": 2400 },
+    { "text": "Entwicklung des Kundenportals: Planung, Implementierung der Kernfunktionalitäten, Quality Assurance", "period": "01.05.2026 – 31.05.2026", "amount": 2700 }
+  ],
+  "note": "Die Verrechnung der oben angeführten Leistung erfolgt gemäß der Kleinunternehmerregelung § 6 Abs. 1 Z 27 UStG 1994 und ist somit umsatzsteuerbefreit.",
+  "logo": ""
+}

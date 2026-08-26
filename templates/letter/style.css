@@ -1,0 +1,6 @@
+.sender-line { margin-bottom: 3em; }
+.recipient { line-height: 1.5; margin-bottom: 3em; }
+.subject { margin: 1em 0 1.5em; font-size: 1.15em; }
+.body { white-space: normal; margin-bottom: 2em; }
+.closing { margin-top: 2em; }
+.signature { height: 2cm; width: auto; display: block; margin: .5em 0; }

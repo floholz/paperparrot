@@ -1,0 +1,8 @@
+{
+  "name": "Letter",
+  "description": "A plain business letter: sender line, recipient block, date, subject, body, signature.",
+  "page": "A4",
+  "locale": "de-AT",
+  "title_format": "{{.subject}} – {{.recipient.name}}",
+  "order": 2
+}

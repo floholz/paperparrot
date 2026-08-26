@@ -1,0 +1,9 @@
+{
+  "date": "2026-05-31",
+  "sender": { "name": "Jane Doe", "address": "Musterstraße 1, 1010 Wien", "place": "Wien" },
+  "recipient": { "name": "Example FlexCo", "address": "Beispielgasse 5\n1020 Wien" },
+  "subject": "Kündigung des Wartungsvertrags Nr. 4711",
+  "body": "Sehr geehrte Damen und Herren,\n\nhiermit kündige ich den oben genannten Vertrag fristgerecht zum nächstmöglichen Zeitpunkt.\n\nBitte bestätigen Sie mir den Eingang dieser Kündigung sowie das Datum, zu dem der Vertrag endet, schriftlich.",
+  "closing": "Mit freundlichen Grüßen",
+  "signature": ""
+}

@@ -1,0 +1,18 @@
+{
+  "fields": [
+    { "key": "date", "type": "date", "label": "Date", "default": "today" },
+    { "key": "sender", "type": "object", "label": "From", "fragment": "sender", "fields": [
+      { "key": "name", "type": "text", "label": "Name" },
+      { "key": "address", "type": "text", "label": "Address (one line)" },
+      { "key": "place", "type": "text", "label": "Place", "required": false }
+    ]},
+    { "key": "recipient", "type": "object", "label": "To", "fragment": "client", "fields": [
+      { "key": "name", "type": "text", "label": "Name" },
+      { "key": "address", "type": "textarea", "label": "Address" }
+    ]},
+    { "key": "subject", "type": "text", "label": "Subject" },
+    { "key": "body", "type": "textarea", "label": "Text" },
+    { "key": "closing", "type": "text", "label": "Closing", "default": "Mit freundlichen Grüßen" },
+    { "key": "signature", "type": "asset", "label": "Signature image", "required": false, "accept": "image/*" }
+  ]
+}

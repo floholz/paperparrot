@@ -1,0 +1,12 @@
+.head { display: flex; gap: 2em; align-items: flex-start; margin-bottom: 2.5em; }
+.head h1 { flex: 1; margin: 0; }
+.head .sender { line-height: 1.5; }
+.head .logo { height: 1.5cm; width: auto; }
+.meta { margin-bottom: 2em; line-height: 1.5; }
+.number { margin: 0 0 1em; }
+.items { margin-bottom: 2.5em; }
+.items tbody td { padding-top: .8em; padding-bottom: .8em; }
+.items .period { margin-top: .2em; }
+.items tfoot th { padding-top: .8em; border-top: 2px solid var(--pp-color-text); border-bottom: 3px double var(--pp-color-text); }
+.note { margin-bottom: 3em; }
+.payment { line-height: 1.5; }
