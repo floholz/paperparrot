@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- sheet of paper with a folded corner -->
+  <path d="M14 4h26l12 12v44H14z" fill="#fffdf6" stroke="#8a8f88" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M40 4v12h12" fill="#e9e6d9" stroke="#8a8f88" stroke-width="2" stroke-linejoin="round"/>
+  <!-- parrot: body, head, beak, eye, tail, wing -->
+  <ellipse cx="31" cy="40" rx="10" ry="13" fill="#2f9e63"/>
+  <circle cx="33" cy="26" r="8.5" fill="#3cb371"/>
+  <path d="M40 24l9 3-9 5z" fill="#f2b632"/>
+  <circle cx="35.5" cy="24.5" r="2.4" fill="#fff"/><circle cx="36" cy="24.7" r="1.2" fill="#1b1f1c"/>
+  <path d="M24 48l-8 14 12-8z" fill="#e0573f"/>
+  <path d="M25 36c-2 6 0 10 4 12-2-4-1-8 1-12z" fill="#1f7a4c"/>
+</svg>
