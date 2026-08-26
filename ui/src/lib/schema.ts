@@ -146,6 +146,20 @@ export function validate(fields: Field[], data: any, strict: boolean, path = '',
   return errs
 }
 
+/** Keep only the keys the schema declares (recursively) — drops leftovers from fragments or older schemas. */
+export function pick(fields: Field[], data: any): Record<string, any> {
+  const out: Record<string, any> = {}
+  if (!data || typeof data !== 'object') return out
+  for (const f of fields) {
+    const v = data[f.key]
+    if (v === undefined) continue
+    if (f.type === 'object') out[f.key] = pick(f.fields ?? [], v)
+    else if (f.type === 'list') out[f.key] = Array.isArray(v) ? v.map(row => pick(f.fields ?? [], row)) : v
+    else out[f.key] = v
+  }
+  return out
+}
+
 /** Deep clone that also works on Svelte state proxies. */
 export const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v ?? null)) ?? ({} as T)
 

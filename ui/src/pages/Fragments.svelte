@@ -1,6 +1,6 @@
 <script lang="ts">
   import { pb, uid, loadFragments, loadTemplates, errMsg, type Fragment, type Template } from '../lib/pb'
-  import { checkSchema, findByKind, fragmentKinds, normalize, clone, type Field } from '../lib/schema'
+  import { checkSchema, findByKind, fragmentKinds, normalize, clone, pick, type Field } from '../lib/schema'
   import SchemaForm from '../lib/SchemaForm.svelte'
   import Modal from '../lib/Modal.svelte'
 
@@ -56,7 +56,8 @@
     if (!edit.name.trim() || !edit.kind.trim()) { error = 'Name and kind are required'; return }
     busy = true; error = ''
     try {
-      const payload = { user: uid(), name: edit.name.trim(), kind: edit.kind.trim(), data: $state.snapshot(data) }
+      const fields = kinds[edit.kind.trim()]?.fields
+      const payload = { user: uid(), name: edit.name.trim(), kind: edit.kind.trim(), data: fields && !edit.asJson ? pick(fields, $state.snapshot(data)) : $state.snapshot(data) }
       if (edit.id) await pb.collection('fragments').update(edit.id, payload)
       else await pb.collection('fragments').create(payload)
       edit = undefined

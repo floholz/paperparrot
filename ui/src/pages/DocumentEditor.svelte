@@ -1,6 +1,6 @@
 <script lang="ts">
   import { pb, uid, loadDocument, loadRenders, loadFragments, renderDocument, duplicateDocument, fileToken, fileUrl, errMsg, fmtDate, type Document, type Template, type Render, type Fragment, type PreviewBody } from '../lib/pb'
-  import { checkSchema, normalize, validate, clone, type Field } from '../lib/schema'
+  import { checkSchema, normalize, validate, clone, pick, type Field } from '../lib/schema'
   import { go } from '../lib/router'
   import SchemaForm from '../lib/SchemaForm.svelte'
   import Preview from '../lib/Preview.svelte'
@@ -48,7 +48,7 @@
     if (!doc) return false
     busy = 'save'; error = ''; serverErrors = {}
     try {
-      const d = await pb.collection<Document>('documents').update(id, { data: $state.snapshot(data), title }, { expand: 'template' })
+      const d = await pb.collection<Document>('documents').update(id, { data: pick(fields, $state.snapshot(data)), title }, { expand: 'template' })
       doc = d
       title = d.title
       saved = snapshot()
@@ -112,13 +112,13 @@
   }
   function insertFragment(f: Fragment) {
     if (!picker) return
-    setPath(data, picker.path, normalize(picker.field.fields ?? [], clone(f.data ?? {})))
+    setPath(data, picker.path, normalize(picker.field.fields ?? [], pick(picker.field.fields ?? [], clone(f.data ?? {}))))
     picker = undefined
   }
   async function saveFragment(field: Field, value: any) {
     const name = prompt(`Save this ${field.fragment} as…`, value?.name ?? '')
     if (!name) return
-    try { await pb.collection('fragments').create({ user: uid(), name, kind: field.fragment, data: $state.snapshot(value) }); flash(`Saved ${field.fragment} "${name}"`) }
+    try { await pb.collection('fragments').create({ user: uid(), name, kind: field.fragment, data: pick(field.fields ?? [], $state.snapshot(value)) }); flash(`Saved ${field.fragment} "${name}"`) }
     catch (e) { error = errMsg(e) }
   }
   function setPath(obj: any, path: string, value: any) {
