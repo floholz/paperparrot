@@ -24,7 +24,11 @@ export interface Field {
   accept?: string
   format?: string
   reset?: 'never' | 'year'
+  /** On a list: "Sync from Clockify" per row; an object sets default filters. */
+  clockify?: boolean | ClockifyDefaults
 }
+
+export interface ClockifyDefaults { billable?: boolean; projects?: string[] }
 
 export interface Schema { fields: Field[] }
 export interface Err { path: string; message: string }
@@ -70,9 +74,26 @@ function checkFields(fields: any[], path: string, depth: number): string {
       if (depth > 0) return `sequence "${p}" must be top-level`
       if (f.reset && f.reset !== 'never' && f.reset !== 'year') return `sequence "${p}": reset must be "never" or "year"`
     }
+    const ce = checkClockify(f, p)
+    if (ce) return ce
     if (f.type === 'text' && f.pattern) {
       try { new RegExp(f.pattern) } catch (e: any) { return `field "${p}": bad pattern: ${e.message}` }
     }
+  }
+  return ''
+}
+
+/** Mirror of schema.checkClockify: synced rows need from/to dates and an amount. */
+function checkClockify(f: any, p: string): string {
+  if (f.clockify === undefined || f.clockify === null || f.clockify === false) return ''
+  if (f.type !== 'list') return `clockify is only allowed on list fields ("${p}")`
+  if (f.clockify !== true && (typeof f.clockify !== 'object' || Array.isArray(f.clockify))) return `"${p}": clockify must be true or {"billable": bool, "projects": [names]}`
+  const want: Record<string, string[]> = { from: ['date'], to: ['date'], hours: ['number', 'money'], rate: ['money', 'number'], amount: ['money', 'number'] }
+  const have = new Map<string, string>((f.fields ?? []).map((x: any) => [x?.key, x?.type]))
+  for (const [k, types] of Object.entries(want)) {
+    const t = have.get(k)
+    if (t === undefined) { if (k === 'hours' || k === 'rate') continue; return `"${p}": clockify rows need a "${k}" field` }
+    if (!types.includes(t)) return `"${p}": clockify field "${k}" must be of type ${types.join(' or ')}`
   }
   return ''
 }

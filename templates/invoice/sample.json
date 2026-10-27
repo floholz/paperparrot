@@ -16,8 +16,8 @@
     "uid": "ATU00000000"
   },
   "items": [
-    { "text": "UX/UI Design und Barrierefreiheit des Kundenportals: Konzeption, Wireframes & Mockups, Accessibility-Implementierung gemäß WCAG 2.1", "period": "01.05.2026 – 31.05.2026", "amount": 2400 },
-    { "text": "Entwicklung des Kundenportals: Planung, Implementierung der Kernfunktionalitäten, Quality Assurance", "period": "01.05.2026 – 31.05.2026", "amount": 2700 }
+    { "text": "UX/UI Design und Barrierefreiheit des Kundenportals: Konzeption, Wireframes & Mockups, Accessibility-Implementierung gemäß WCAG 2.1", "from": "2026-05-01", "to": "2026-05-31", "hours": 40, "rate": 60, "amount": 2400 },
+    { "text": "Entwicklung des Kundenportals: Planung, Implementierung der Kernfunktionalitäten, Quality Assurance", "period": "Mai 2026", "amount": 2700 }
   ],
   "note": "Die Verrechnung der oben angeführten Leistung erfolgt gemäß der Kleinunternehmerregelung § 6 Abs. 1 Z 27 UStG 1994 und ist somit umsatzsteuerbefreit.",
   "logo": ""

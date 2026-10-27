@@ -111,6 +111,16 @@ Types: `text` (`placeholder`, `pattern`), `textarea`, `number` (`min`/`max`/`ste
 `{mm}`; `reset: "never" | "year"`). Common: `label`, `help`, `required` (default true),
 `default`. Drafts may be incomplete; required fields are enforced when rendering.
 
+**Clockify sync** — `"clockify": true` on a `list` field adds a *Sync from Clockify* button to
+each row. It fetches your own time entries between the row's `from` and `to` dates (inclusive,
+in your Clockify time zone — no one-month limit), sums them exactly and fills `hours` (two
+decimals), `rate` and `amount = hours × rate`. Rows need `from`/`to` (`date`) and `amount`;
+`hours` and `rate` are optional. *Filter…* narrows by billable / project / description without a
+new request; `"clockify": {"billable": true, "projects": ["Dev-Ops"]}` sets defaults. Connect
+under *Settings* with a Clockify API key (kept server-side, read-only use). The rate comes from
+the row, else the Settings default, else the rate Clockify still stores on the entries. The
+invoice starter has it enabled.
+
 **Theme tokens** (Theme tab): `font-body`, `font-heading`, `font-size`, `color-text`,
 `color-heading`, `color-accent`, `color-muted`, `color-block-bg`, `margin`. Available in CSS
 as `var(--pp-color-accent)` etc. The base stylesheet provides `.box`, `.muted`, `.small`,

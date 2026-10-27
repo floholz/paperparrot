@@ -16,9 +16,13 @@
       { "key": "email", "type": "text", "label": "Email", "required": false },
       { "key": "uid", "type": "text", "label": "UID", "required": false }
     ]},
-    { "key": "items", "type": "list", "label": "Items", "min": 1, "fields": [
+    { "key": "items", "type": "list", "label": "Items", "min": 1, "clockify": true, "fields": [
       { "key": "text", "type": "textarea", "label": "Service" },
-      { "key": "period", "type": "text", "label": "Period", "required": false, "placeholder": "01.05.2026 – 31.05.2026" },
+      { "key": "from", "type": "date", "label": "From", "required": false },
+      { "key": "to", "type": "date", "label": "To", "required": false },
+      { "key": "period", "type": "text", "label": "Period (free text)", "required": false, "help": "Only shown when From/To are empty." },
+      { "key": "hours", "type": "number", "label": "Hours", "required": false, "step": 0.01, "help": "With a rate, the invoice shows hours × rate." },
+      { "key": "rate", "type": "money", "label": "Hourly rate", "required": false },
       { "key": "amount", "type": "money", "label": "Amount" }
     ]},
     { "key": "note", "type": "textarea", "label": "Note", "required": false,

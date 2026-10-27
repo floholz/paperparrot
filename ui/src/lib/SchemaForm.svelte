@@ -4,7 +4,7 @@
   import { originalName } from './pb'
 
   /** Form generated from a field list; mutates `data` in place (a $state proxy from the page). */
-  let { fields, data = $bindable(), errors = {}, path = '', assets = [], onUpload, onFragment, onSaveFragment, compact = false }: {
+  let { fields, data = $bindable(), errors = {}, path = '', assets = [], onUpload, onFragment, onSaveFragment, onClockify, clockifyNotes = {}, compact = false }: {
     fields: Field[]
     data: Record<string, any>
     errors?: Record<string, string>
@@ -13,6 +13,10 @@
     onUpload?: (file: File) => Promise<string>
     onFragment?: (field: Field, path: string) => void
     onSaveFragment?: (field: Field, value: any) => void
+    /** "Sync from Clockify" on a row of a list with `clockify`; `adjust` opens the filter dialog. */
+    onClockify?: (field: Field, rowPath: string, adjust: boolean) => void
+    /** Result line per synced row path, e.g. "174.36 h · 40 entries". */
+    clockifyNotes?: Record<string, string>
     compact?: boolean
   } = $props()
 
@@ -55,7 +59,7 @@
           {/if}
         </legend>
         {#if f.help}<div class="muted tiny">{f.help}</div>{/if}
-        <SchemaForm fields={f.fields ?? []} bind:data={data[f.key]} {errors} path={p(f.key)} {assets} {onUpload} {onFragment} {onSaveFragment} compact />
+        <SchemaForm fields={f.fields ?? []} bind:data={data[f.key]} {errors} path={p(f.key)} {assets} {onUpload} {onFragment} {onSaveFragment} {onClockify} {clockifyNotes} compact />
       </fieldset>
     {:else if f.type === 'list'}
       <fieldset>
@@ -63,8 +67,21 @@
         {#if f.help}<div class="muted tiny">{f.help}</div>{/if}
         {#if err(f.key)}<div class="field-error">{err(f.key)}</div>{/if}
         {#each data[f.key] ?? [] as _row, i (i)}
+          {@const rowPath = `${p(f.key)}.${i}`}
           <div class="list-row">
-            <SchemaForm fields={f.fields ?? []} bind:data={data[f.key][i]} {errors} path={`${p(f.key)}.${i}`} {assets} {onUpload} compact />
+            <div class="list-main">
+              <SchemaForm fields={f.fields ?? []} bind:data={data[f.key][i]} {errors} path={rowPath} {assets} {onUpload} compact />
+              {#if f.clockify && onClockify}
+                {@const ready = !!data[f.key][i]?.from && !!data[f.key][i]?.to}
+                <div class="sync-bar">
+                  <button type="button" onclick={() => onClockify(f, rowPath, false)} disabled={!ready} title={ready ? 'Fetch your tracked time for From – To and fill in hours and amount' : 'Set From and To first'}>⟳ Sync from Clockify</button>
+                  {#if clockifyNotes[rowPath]}
+                    <span class="muted tiny">{clockifyNotes[rowPath]}</span>
+                    <button type="button" class="link tiny" onclick={() => onClockify(f, rowPath, true)}>Filter…</button>
+                  {/if}
+                </div>
+              {/if}
+            </div>
             <div class="row-actions">
               <button type="button" onclick={() => moveRow(f, i, -1)} disabled={i === 0} title="Move up">↑</button>
               <button type="button" onclick={() => moveRow(f, i, 1)} disabled={i === (data[f.key]?.length ?? 0) - 1} title="Move down">↓</button>

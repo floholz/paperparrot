@@ -6,7 +6,7 @@
 .number { margin: 0 0 1em; }
 .items { margin-bottom: 2.5em; }
 .items tbody td { padding-top: .8em; padding-bottom: .8em; }
-.items .period { margin-top: .2em; }
+.items .period, .items .hours { margin-top: .2em; }
 .items tfoot th { padding-top: .8em; border-top: 2px solid var(--pp-color-text); border-bottom: 3px double var(--pp-color-text); }
 .note { margin-bottom: 3em; }
 .payment { line-height: 1.5; }

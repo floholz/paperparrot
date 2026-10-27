@@ -8,6 +8,7 @@
   import DocumentEditor from './pages/DocumentEditor.svelte'
   import Fragments from './pages/Fragments.svelte'
   import Fonts from './pages/Fonts.svelte'
+  import Settings from './pages/Settings.svelte'
   import ThemeToggle from './lib/ThemeToggle.svelte'
   import './lib/theme'
 
@@ -25,6 +26,7 @@
     ['documents', 'Documents'],
     ['fragments', 'Fragments'],
     ['fonts', 'Fonts'],
+    ['settings', 'Settings'],
   ] as const
   const wide = $derived(!!route.id && (route.page === 'templates' || route.page === 'documents'))
 </script>
@@ -59,6 +61,8 @@
         <Fragments />
       {:else if route.page === 'fonts'}
         <Fonts />
+      {:else if route.page === 'settings'}
+        <Settings />
       {:else}
         <Templates />
       {/if}

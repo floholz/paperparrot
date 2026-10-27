@@ -73,6 +73,35 @@ export interface Starter {
   title_format: string
 }
 
+export interface ClockifyWorkspace { id: string; name: string }
+export interface ClockifySettings {
+  connected: boolean
+  name?: string
+  timezone?: string
+  workspace?: string
+  workspaces?: ClockifyWorkspace[]
+  rate: number
+}
+export interface ClockifyEntry {
+  start: string
+  seconds: number
+  billable: boolean
+  project: string
+  project_name: string
+  client: string
+  description: string
+  tags: string[]
+}
+export interface ClockifyEntries {
+  from: string
+  to: string
+  timezone: string
+  entries: ClockifyEntry[]
+  running: number
+  clockify_rate: number | null
+  currency?: string
+}
+
 export interface Status { registration: boolean; render: boolean; version: string }
 
 // ---- custom API ----------------------------------------------------------------
@@ -95,6 +124,14 @@ export const starters = (): Promise<Starter[]> => pb.send('/api/pp/starters', { 
 export const createFromStarter = (id: string): Promise<Template> => pb.send(`/api/pp/starters/${id}`, { method: 'POST' })
 export const renderDocument = (id: string): Promise<Render> => pb.send(`/api/pp/documents/${id}/render`, { method: 'POST' })
 export const duplicateDocument = (id: string): Promise<Document> => pb.send(`/api/pp/documents/${id}/duplicate`, { method: 'POST' })
+
+export const clockifySettings = (): Promise<ClockifySettings> => pb.send('/api/pp/clockify', { method: 'GET' })
+export const saveClockify = (body: { api_key?: string; workspace?: string; rate?: number }): Promise<ClockifySettings> =>
+  pb.send('/api/pp/clockify', { method: 'PUT', body })
+export const disconnectClockify = (): Promise<ClockifySettings> => pb.send('/api/pp/clockify', { method: 'DELETE' })
+/** The user's own time entries that started on the inclusive dates (one Clockify request). */
+export const clockifyEntries = (from: string, to: string): Promise<ClockifyEntries> =>
+  pb.send('/api/pp/clockify/entries', { method: 'POST', body: { from, to } })
 
 /** Body of /preview: inline fields override the stored template. */
 export interface PreviewBody {

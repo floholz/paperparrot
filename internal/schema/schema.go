@@ -44,6 +44,9 @@ type Field struct {
 	Accept      string   `json:"accept,omitempty"`
 	Format      string   `json:"format,omitempty"`
 	Reset       string   `json:"reset,omitempty"`
+	// Clockify on a list enables "Sync from Clockify" per row: `true` or an
+	// object with default filters ({"billable": true, "projects": [...]}).
+	Clockify json.RawMessage `json:"clockify,omitempty"`
 }
 
 // IsRequired reports the effective required flag (default true).
@@ -113,6 +116,9 @@ func checkFields(fields []Field, path string, depth int) error {
 		if !contains(Types, f.Type) {
 			return fmt.Errorf("schema: field %q has unknown type %q", p, f.Type)
 		}
+		if err := checkClockify(f, p); err != nil {
+			return err
+		}
 		switch f.Type {
 		case "object", "list":
 			if len(f.Fields) == 0 {
@@ -141,6 +147,50 @@ func checkFields(fields []Field, path string, depth int) error {
 					return fmt.Errorf("schema: field %q: bad pattern: %v", p, err)
 				}
 			}
+		}
+	}
+	return nil
+}
+
+// ClockifyEnabled reports whether a list field has "Sync from Clockify".
+func (f Field) ClockifyEnabled() bool {
+	v := strings.TrimSpace(string(f.Clockify))
+	return v != "" && v != "false" && v != "null"
+}
+
+// checkClockify: rows synced from Clockify need from/to dates and an amount;
+// hours and rate are optional but must be numeric when present.
+func checkClockify(f Field, p string) error {
+	if !f.ClockifyEnabled() {
+		return nil
+	}
+	if f.Type != "list" {
+		return fmt.Errorf("schema: clockify is only allowed on list fields (%q)", p)
+	}
+	var opts struct {
+		Billable bool     `json:"billable"`
+		Projects []string `json:"projects"`
+	}
+	if v := strings.TrimSpace(string(f.Clockify)); v != "true" {
+		if err := json.Unmarshal(f.Clockify, &opts); err != nil {
+			return fmt.Errorf("schema: %q: clockify must be true or {\"billable\": bool, \"projects\": [names]}", p)
+		}
+	}
+	want := map[string][]string{"from": {"date"}, "to": {"date"}, "amount": {"money", "number"}, "hours": {"number", "money"}, "rate": {"money", "number"}}
+	have := map[string]string{}
+	for _, sub := range f.Fields {
+		have[sub.Key] = sub.Type
+	}
+	for _, k := range []string{"from", "to", "hours", "rate", "amount"} {
+		t, ok := have[k]
+		if !ok {
+			if k == "hours" || k == "rate" {
+				continue
+			}
+			return fmt.Errorf("schema: %q: clockify rows need a %q field", p, k)
+		}
+		if !contains(want[k], t) {
+			return fmt.Errorf("schema: %q: clockify field %q must be of type %s", p, k, strings.Join(want[k], " or "))
 		}
 	}
 	return nil

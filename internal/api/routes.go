@@ -97,6 +97,10 @@ func (s *Server) RegisterRoutes(e *core.ServeEvent) {
 	})
 	g.POST("/documents/{id}/render", s.renderDocument)
 	g.POST("/documents/{id}/duplicate", s.duplicateDocument)
+	g.GET("/clockify", s.getClockify)
+	g.PUT("/clockify", s.putClockify)
+	g.DELETE("/clockify", s.deleteClockify)
+	g.POST("/clockify/entries", s.clockifyEntriesRoute)
 }
 
 // composePreview builds the HTML for a preview request.

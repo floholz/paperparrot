@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { pb, uid, loadDocument, loadRenders, loadFragments, renderDocument, duplicateDocument, fileToken, fileUrl, errMsg, fmtDate, type Document, type Template, type Render, type Fragment, type PreviewBody } from '../lib/pb'
+  import { pb, uid, loadDocument, loadRenders, loadFragments, renderDocument, duplicateDocument, fileToken, fileUrl, errMsg, fmtDate, clockifySettings, clockifyEntries, type Document, type Template, type Render, type Fragment, type PreviewBody, type ClockifyEntries, type ClockifySettings } from '../lib/pb'
+  import { defaultFilter, total, applyToRow, pickRate, projects, fmtHours, type Filter } from '../lib/clockify'
   import { checkSchema, normalize, validate, clone, pick, type Field } from '../lib/schema'
   import { go } from '../lib/router'
   import SchemaForm from '../lib/SchemaForm.svelte'
@@ -121,6 +122,57 @@
     try { await pb.collection('fragments').create({ user: uid(), name, kind: field.fragment, data: pick(field.fields ?? [], $state.snapshot(value)) }); flash(`Saved ${field.fragment} "${name}"`) }
     catch (e) { error = errMsg(e) }
   }
+  // ---- Clockify: fetch once per click, filter and sum locally ----
+  let cfg = $state<ClockifySettings | undefined>()
+  let synced = $state<Record<string, { res: ClockifyEntries; filter: Filter }>>({})
+  let clockifyNotes = $state<Record<string, string>>({})
+  let filterDlg = $state<{ path: string; filter: Filter } | undefined>()
+
+  async function syncClockify(field: Field, path: string, adjust: boolean) {
+    if (adjust) {
+      const s = synced[path]
+      if (s) filterDlg = { path, filter: clone(s.filter) }
+      return
+    }
+    if (busy) return
+    const row = getPath(data, path)
+    busy = 'clockify'; error = ''
+    try {
+      cfg ??= await clockifySettings()
+      if (!cfg.connected) { error = 'Clockify is not connected — add your API key under Settings.'; return }
+      const res = await clockifyEntries(row.from, row.to)
+      // a re-sync keeps the filter chosen for this row
+      const filter = synced[path]?.filter ?? defaultFilter(field, res.entries)
+      synced[path] = { res, filter }
+      applyClockify(path, filter)
+    } catch (e) { error = errMsg(e) } finally { busy = '' }
+  }
+
+  function applyClockify(path: string, filter: Filter) {
+    const s = synced[path]
+    if (!s) return
+    s.filter = filter
+    const row = getPath(data, path)
+    const t = total(s.res.entries, filter)
+    const rate = pickRate(row, cfg?.rate ?? 0, s.res)
+    applyToRow(row, t.seconds, rate)
+    const parts = [fmtHours(t.seconds), `${t.count} of ${s.res.entries.length} entries`]
+    if (filter.billable || filter.projects.length || filter.text) parts.push('filtered')
+    if (s.res.running) parts.push(`${s.res.running} running timer skipped`)
+    if (rate === null) parts.push('no hourly rate — set one in Settings or on the row')
+    clockifyNotes[path] = parts.join(' · ')
+  }
+
+  const dlgTotal = $derived(filterDlg && synced[filterDlg.path] ? total(synced[filterDlg.path].res.entries, filterDlg.filter) : undefined)
+  function toggleProject(id: string) {
+    if (!filterDlg) return
+    const ps = filterDlg.filter.projects.filter(p => p !== '-')
+    filterDlg.filter.projects = ps.includes(id) ? ps.filter(p => p !== id) : [...ps, id]
+  }
+
+  function getPath(obj: any, path: string): any {
+    return path.split('.').reduce((cur, p) => cur?.[p], obj)
+  }
   function setPath(obj: any, path: string, value: any) {
     const parts = path.split('.')
     let cur = obj
@@ -159,7 +211,7 @@
         <button class:on={tab === 'renders'} onclick={() => (tab = 'renders')}>Renders ({renders.length})</button>
       </div>
       {#if tab === 'data'}
-        <SchemaForm {fields} bind:data {errors} assets={tpl.assets ?? []} onUpload={uploadAsset} onFragment={openFragment} onSaveFragment={saveFragment} />
+        <SchemaForm {fields} bind:data {errors} assets={tpl.assets ?? []} onUpload={uploadAsset} onFragment={openFragment} onSaveFragment={saveFragment} onClockify={syncClockify} {clockifyNotes} />
       {:else}
         {#if !renders.length}
           <p class="muted">No renders yet. Every “Render PDF” keeps an immutable copy here.</p>
@@ -201,5 +253,27 @@
         {/each}
       </div>
     {/if}
+  </Modal>
+{/if}
+
+{#if filterDlg && synced[filterDlg.path]}
+  {@const s = synced[filterDlg.path]}
+  <Modal title="Clockify filter" onclose={() => (filterDlg = undefined)}>
+    <div class="col">
+      <p class="muted small" style="margin:0">{s.res.from} – {s.res.to} · {s.res.entries.length} entries · changing the filter needs no new request.</p>
+      <label class="field check"><input type="checkbox" bind:checked={filterDlg.filter.billable} /> Billable entries only</label>
+      <div>
+        <div class="muted small" style="margin-bottom:.3rem">Projects <span class="tiny">(none ticked = all)</span></div>
+        {#each projects(s.res.entries) as p (p.id)}
+          <label class="field check"><input type="checkbox" checked={filterDlg.filter.projects.includes(p.id)} onchange={() => toggleProject(p.id)} /> {p.label} <span class="muted small">{(p.seconds / 3600).toFixed(2)} h</span></label>
+        {/each}
+      </div>
+      <label class="field">Description contains <input bind:value={filterDlg.filter.text} placeholder="e.g. Kundenportal" /></label>
+      {#if dlgTotal}<div class="notice ok"><strong>{fmtHours(dlgTotal.seconds)}</strong> · {dlgTotal.count} entries</div>{/if}
+      <div class="row" style="justify-content:flex-end">
+        <button onclick={() => (filterDlg = undefined)}>Cancel</button>
+        <button class="primary" onclick={() => { if (filterDlg) { applyClockify(filterDlg.path, clone(filterDlg.filter)); filterDlg = undefined } }}>Apply to row</button>
+      </div>
+    </div>
   </Modal>
 {/if}

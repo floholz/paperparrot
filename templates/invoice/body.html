@@ -31,7 +31,11 @@
   <tbody>
     {{range .items}}
     <tr>
-      <td>{{nl2br .text}}{{with .period}}<div class="muted small period">{{.}}</div>{{end}}</td>
+      <td>
+        {{nl2br .text}}
+        {{if .from}}<div class="muted small period">{{date .from}} – {{date .to}}</div>{{else}}{{with .period}}<div class="muted small period">{{.}}</div>{{end}}{{end}}
+        {{if and .hours .rate}}<div class="muted small hours">{{num .hours 2}} h × {{money .rate}}</div>{{end}}
+      </td>
       <td class="num">{{money .amount}}</td>
     </tr>
     {{end}}
